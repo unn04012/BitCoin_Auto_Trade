@@ -72,7 +72,24 @@
         }
         // setInterval(getCurrentPrice, 1000);
         exec();
+        let socket = new WebSocket('wss://api.upbit.com/websocket/v1');
+        socket.binaryType = 'arraybuffer';
 
+        socket.onopen = (e) => {
+            console.log('connection success');
+            socket.send('[{"ticket":"test"},{"type":"ticker","codes":["KRW-BTC"]}]');
+        }
+
+        socket.onmessage = (e) => {
+            let data = new Uint8Array(e.data);
+            console.log(data);
+            console.log(new TextDecoder().decode(data));
+        }
+
+        setTimeout(() => {
+            socket.close();
+            console.log('sockect closed')
+        }, 5000)
 
     </script>
 </body>
