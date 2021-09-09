@@ -1,0 +1,31 @@
+{
+  "name": "bitcoin_sales_program",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mun",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "0.21.4",
+    "crypto": "1.0.1",
+    "dotenv": "10.0.0",
+    "express": "4.17.1",
+    "express-template-es6": "1.0.3",
+    "jsonwebtoken": "8.5.1",
+    "node-fetch": "3.0.0",
+    "nunjucks": "3.2.3",
+    "request": "2.88.2",
+    "uuidv4": "6.2.12"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.15.4",
+    "@babel/core": "7.15.5",
+    "@babel/node": "7.15.4",
+    "@babel/preset-env": "7.15.4",
+    "core-js": "3.17.2"
+  }
+}

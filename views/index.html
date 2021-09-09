@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        tr,
+        td {
+            border: 1px solid black;
+        }
+
+        .price {
+            padding: 5px 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mainCoin">
+        <h1>비트코인</h1>
+        <div><span class="price"></span></div>
+    </div>
+    <table>
+        <thead>
+            <th>코인명</th>
+            <th>English</th>
+            <th>유의종목 여부</th>
+        </thead>
+        <tbody>
+            {% for list in lists %}
+            <tr>
+                <td>{{list.korean_name}}</td>
+                <td>{{list.english_name}}</td>
+                <td>{{list.market_warning}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const price = document.querySelector('.price');
+        let prices = [];
+        const getCurrentPrice = async () => {
+            try {
+                const result = await axios.get('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
+
+                const { trade_price, change } = result.data[0];
+                const tradeUrl = await axios.get('https://api.upbit.com/v1/trades/ticks?market=KRW-BTC');
+                const { ask_bid } = tradeUrl.data[0];
+                switch (ask_bid) {
+                    case 'BID':
+                        price.style.color = 'red';
+                        break;
+                    case 'ASK':
+                        price.style.color = 'blue';
+                        break;
+                }
+
+                price.innerHTML = trade_price;
+            } catch (err) {
+                console.log(err)
+            }
+
+        }
+        const exec = async () => {
+            await setInterval(getCurrentPrice, 500);
+        }
+        // setInterval(getCurrentPrice, 1000);
+        exec();
+
+
+    </script>
+</body>
+
+</html>
