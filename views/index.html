@@ -29,6 +29,7 @@
             <th>코인명</th>
             <th>English</th>
             <th>유의종목 여부</th>
+            <th>코인이름</th>
         </thead>
         <tbody>
             {% for list in lists %}
@@ -36,6 +37,7 @@
                 <td>{{list.korean_name}}</td>
                 <td>{{list.english_name}}</td>
                 <td>{{list.market_warning}}</td>
+                <td>{{list.market}}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -44,6 +46,35 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         const price = document.querySelector('.price');
+        const dayCandleUrl = 'https://api.upbit.com/v1/candles/days?count=1';
+        const option = { headers: { Accept: 'application/json' } };
+
+        const getLastDay = () => {
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = ("0" + (1 + date.getMonth())).slice(-2);
+            let day = ("0" + (date.getDate())).slice(-2) - 1;
+            console.log(("0" + (date.getDate())))
+
+            return year + "-" + month + "-" + day + 'T00:00:00.000Z';
+        }
+        const get_target_price = async (market = 'KRW-BTC') => { // 목표가 얻기
+            try {
+                const time = getLastDay();
+                // const { data } = await axios.get(`https://api.upbit.com/v1/candles/days?market=${market}&to=${startTime}`);                                
+                console.log(time)
+                const price = await axios.get(`https://api.upbit.com/v1/candles/days?market=${market}&to=${time}&count=1`);
+                const currentPrice = await axios.get(`https://api.upbit.com/v1/candles/days?market=${market}&count=1`);
+                let changeWidth = currentPrice.data[0].opening_price + Math.abs(price.data[0].high_price - price.data[0].low_price) * 0.5;
+                console.log(changeWidth)
+
+
+                console.log(prices)
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        get_target_price();
         let prices = [];
         const getCurrentPrice = async () => {
             try {
@@ -60,8 +91,7 @@
                         price.style.color = 'blue';
                         break;
                 }
-
-                price.innerHTML = trade_price;
+                // price.innerHTML = trade_price;
             } catch (err) {
                 console.log(err)
             }
@@ -77,13 +107,16 @@
 
         socket.onopen = (e) => {
             console.log('connection success');
-            socket.send('[{"ticket":"test"},{"type":"ticker","codes":["KRW-BTC"]}]');
+            socket.send('[{"ticket":"test"},{"type":"ticker","codes":["KRW-XRP"]}]',);
         }
 
         socket.onmessage = (e) => {
             let data = new Uint8Array(e.data);
-            console.log(data);
-            console.log(new TextDecoder().decode(data));
+            // console.log(data);
+            // console.log(new TextDecoder().decode(data));
+            let jsonData = JSON.parse(new TextDecoder().decode(data));
+            console.log(jsonData)
+            price.innerHTML = jsonData.trade_price;
         }
 
         setTimeout(() => {
